@@ -28,7 +28,7 @@ Params Description:
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabels
 ```
 
@@ -127,7 +127,7 @@ Additionally, if the vertex has a property called "createdTime" and you want to 
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabels/person?action=append
 ```
 
@@ -183,7 +183,7 @@ PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabe
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabels
 ```
 
@@ -248,7 +248,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabe
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabels/person
 ```
 
@@ -291,7 +291,7 @@ Deleting a VertexLabel will result in the removal of corresponding vertices and 
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/vertexlabels/person
 ```
 

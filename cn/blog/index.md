@@ -1,4 +1,4 @@
-# Blog
+# 博客
 
 LLMS 索引： [llms.txt](/cn/llms.txt)
 

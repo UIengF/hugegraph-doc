@@ -10,7 +10,8 @@ LLMS 索引： [llms.txt](/cn/llms.txt)
 
 `hugegraph-server` 模块包含 `hugegraph-core`、`hugegraph-api`、`hugegraph-dist` 和存储适配等子模块。Core 实现属性图模型、事务与 TinkerPop 接口，API 提供 HTTP 服务并将客户端请求交给 Core 处理。图数据由 RocksDB（单机默认）、HStore（分布式）或 HBase 后端保存。
 
-> ⚠️ **版本说明**：本文区分已发布版本与开发主线。下载示例使用 ASF 发布的 HugeGraph 1.7.0 安装包；源码构建、配置默认值和启动行为以 `apache/hugegraph` 的 `master` 分支为准。主线源码构建出的包不是 ASF 发布包，即使包内版本号相同也不代表与 1.7.0 发布包相同。本文介绍 RocksDB、HStore 和 HBase；其他旧后端请参考 [HugeGraph 1.5.x 文档](https://github.com/apache/hugegraph-doc/blob/release-1.5.0/content/cn/docs/quickstart/hugegraph/hugegraph-server.md)。
+> [!WARNING]
+> **版本说明**：本文区分已发布版本与开发主线。下载示例使用 ASF 发布的 HugeGraph 1.7.0 安装包；源码构建、配置默认值和启动行为以 `apache/hugegraph` 的 `master` 分支为准。主线源码构建出的包不是 ASF 发布包，即使包内版本号相同也不代表与 1.7.0 发布包相同。本文介绍 RocksDB、HStore 和 HBase；其他旧后端请参考 [HugeGraph 1.5.x 文档](https://github.com/apache/hugegraph-doc/blob/release-1.5.0/content/cn/docs/quickstart/hugegraph/hugegraph-server.md)。
 
 > 名称说明：`HugeGraph` 表示整个项目或主仓库，`hugegraph-server` 表示仓库中的 Server 模块，`HugeGraphServer` 是服务进程的 Java 类名。下文的 Server 服务指运行中的图数据库服务。
 
@@ -26,6 +27,22 @@ flowchart TD
     C --> I[bin/init-store.sh]
     I --> S["bin/start-hugegraph.sh -p true"]
     S --> Q["请求 /versions 和图顶点接口"]
+```
+
+主仓库模块概览使用短名称；`server`、`core`、`api`、`dist`、`pd` 和 `store` 对应带 `hugegraph-` 前缀的模块。上方保留功能说明，`dist` 负责发行打包。
+
+```markmap
+---
+markmap:
+  spacingHorizontal: 40
+---
+# HugeGraph
+## server
+- core
+- api
+- dist
+## pd
+## store
 ```
 
 ## 2 依赖
@@ -46,11 +63,11 @@ HugeGraph 1.7.0 中的 `hugegraph-server` 模块使用 Java 11 编译，运行�
 
 有四种方式可以部署 Server 服务：
 
-1. 使用 Docker 容器进行测试或开发。
-1. 下载二进制 tar 包。
-1. 从源码编译。
-1. 使用已过时的一键部署工具。
-{.steps}
+- [Docker 容器](#31-使用-docker-容器-便于测试) 用于测试或开发，快速启动 Server 服务。
+- [ASF 发布包](#32-下载已发布的-tar-包) 下载已发布的 tar 包，校验后安装。
+- [master 源码](#33-从-master-源码构建) 构建开发主线，产物不等同于 ASF 发布包。
+- [旧版一键部署工具（已过时）](#34-使用-tools-工具部署-outdated) 仅供了解旧版部署方式。
+{.cards}
 
 > [!WARNING]
 > **生产环境必须启用鉴权并限制网络访问**
@@ -76,7 +93,8 @@ HugeGraph 1.7.0 中的 `hugegraph-server` 模块使用 Java 11 编译，运行�
 </div>
 
 
-> **注意**：Docker Compose 文件使用桥接网络（`hg-net`），适用于 Linux 和 Mac（Docker Desktop）。如需运行 3 节点分布式集群，请为 Docker Desktop 分配至少 **12 GB** 内存（设置 → 资源 → 内存）。Linux 上 Docker 直接使用宿主机内存。
+> [!NOTE]
+> Docker Compose 文件使用桥接网络（`hg-net`），适用于 Linux 和 Mac（Docker Desktop）。如需运行 3 节点分布式集群，请为 Docker Desktop 分配至少 **12 GB** 内存（设置 → 资源 → 内存）。Linux 上 Docker 直接使用宿主机内存。
 
 如果希望通过一个配置文件统一管理 HugeGraph 的多个服务实例，则可以使用 `docker compose`。 [`docker/`](https://github.com/apache/hugegraph/tree/master/docker) 目录下提供了四个 compose 文件：
 
@@ -101,7 +119,7 @@ HUGEGRAPH_VERSION=1.7.0 docker compose -f docker-compose.yml up -d --wait
 
 完整的部署指南请参阅 [docker/README.md](https://github.com/apache/hugegraph/blob/master/docker/README.md)。
 
-> 注意：
+> [!NOTE]
 > 
 > 1. HugeGraph 的 Docker 镜像主要用于便捷地快速启动 HugeGraph，并不是 **ASF 官方发布物料包**。你可以从 [ASF Release Distribution Policy](https://infra.apache.org/release-distribution.html#dockerhub) 中了解更多细节。
 >
@@ -111,7 +129,7 @@ HUGEGRAPH_VERSION=1.7.0 docker compose -f docker-compose.yml up -d --wait
 
 以下示例针对 HugeGraph 1.7.0。使用其他版本时，请先在 [ASF 下载目录](https://downloads.apache.org/hugegraph/) 确认该版本及对应文件名；不要把 `master` 源码构建包当作已发布的二进制包。
 
-```bash {title="download-release.sh" wrap=true collapse=2}
+```bash {wrap=true}
 cd /path/to/downloads
 wget https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz
 wget https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz.sha512
@@ -138,7 +156,7 @@ gpg --verify apache-hugegraph-incubating-1.7.0.tar.gz.asc apache-hugegraph-incub
 
 下载 HugeGraph 源代码
 
-```bash {title="build-from-source.sh" wrap=true collapse=2}
+```bash {wrap=true}
 git clone --branch master https://github.com/apache/hugegraph.git
 ```
 
@@ -172,6 +190,8 @@ mvn package -DskipTests -ntp -Drocksdb-only
 
 > [!DETAILS]- 过时的 tools 工具安装
 > #### 3.4 使用 tools 工具部署 (Outdated)
+>
+> **已过时** 仅指此一键部署入口。
 >
 > HugeGraph-Tools 提供一键部署命令，可以下载、解压、配置并启动 Server 服务和 HugeGraph-Hubble。HugeGraph-Toolchain 发布包中已包含这些工具。
 >
@@ -222,10 +242,13 @@ HugeGraphServer 启动时会连接后端存储并检查其版本信息。如果�
 
 #### 5.1.1 分布式存储 (HStore)
 
-> [!DETAILS]- 点击展开/折叠 分布式存储 配置及启动方法
+要使用分布式存储引擎，需要先部署 HugeGraph-PD 和 HugeGraph-Store，详见 [HugeGraph-PD 快速入门](/cn/docs/quickstart/hugegraph/hugegraph-pd/) 和 [HugeGraph-Store 快速入门](/cn/docs/quickstart/hugegraph/hugegraph-hstore/)。
+
+> [!WARNING]
+> `umask 077` 保护新建的 `.env`，但 `set-hubble-pd-password.sh` 会将生成的 `.local.properties` 权限设为 `0644`，本机其他用户也能读取其中的 PD 密钥。下面示例仅适用于本机用户均可信的环境；共享主机必须先按 Hubble 运行用户设置文件属主与读取权限，确保 Hubble 可读且其他非授权用户不可读。不提交文件不能替代文件权限保护。
+
+> [!DETAILS]+ 分布式存储配置及启动方法
 > > 分布式存储是 HugeGraph 1.5.0 之后推出的新特性，它基于 HugeGraph-PD 和 HugeGraph-Store 组件实现了分布式的数据存储和计算。
->
-> 要使用分布式存储引擎，需要先部署 HugeGraph-PD 和 HugeGraph-Store，详见 [HugeGraph-PD 快速入门](/cn/docs/quickstart/hugegraph/hugegraph-pd/) 和 [HugeGraph-Store 快速入门](/cn/docs/quickstart/hugegraph/hugegraph-hstore/)。
 >
 > 确保 PD 和 Store 服务均已启动后
 >
@@ -363,10 +386,7 @@ HugeGraphServer 启动时会连接后端存储并检查其版本信息。如果�
 >
 > 先在 `docker/` 目录创建认证环境并生成 HStore Hubble 配置。用自己设置的管理员密码替换示例文本；因 `.env` 使用单引号包裹，密码不能含单引号或换行。脚本生成 JWT 与 PD 随机密钥，并将 PD 密钥写入两个 HStore Compose 会挂载的未跟踪 `.local.properties` 文件：
 >
-> > [!WARNING]
-> > `umask 077` 保护新建的 `.env`，但 `set-hubble-pd-password.sh` 会将生成的 `.local.properties` 权限设为 `0644`，本机其他用户也能读取其中的 PD 密钥。下面示例仅适用于本机用户均可信的环境；共享主机必须先按 Hubble 运行用户设置文件属主与读取权限，确保 Hubble 可读且其他非授权用户不可读。不提交文件不能替代文件权限保护。
->
-> ```bash
+> ```bash {wrap=true collapse=9}
 > (
 >   set -eu
 >   command -v openssl >/dev/null
@@ -410,45 +430,55 @@ HugeGraphServer 启动时会连接后端存储并检查其版本信息。如果�
 >
 > 完整的环境变量参考、端口表和故障排查指南请参阅 [docker/README.md](https://github.com/apache/hugegraph/blob/master/docker/README.md)。
 
+
 #### 5.1.2 RocksDB / ToplingDB
 
 从 `master` 构建的单机最小流程如下。此例启用内置样例数据，以便后续请求能验证图数据读写路径。
 
-> [!DETAILS]- 点击展开/折叠 RocksDB 配置及启动方法
-> > RocksDB 是一个嵌入式的数据库，不需要手动安装部署，要求 GCC 版本 >= 4.3.0（GLIBCXX_3.4.10），如不满足，需要提前升级 GCC
->
-> 主线包内的 `conf/graphs/hugegraph.properties` 默认已设置 `backend=rocksdb` 和 `serializer=binary`。使用默认数据目录时无需修改；若改过后端或数据路径，先确认配置，再初始化存储。
->
-> 初始化数据库（首次启动，或在 `conf/graphs/` 下添加了新图配置后）：
->
-> ```bash
-> cd apache-hugegraph-1.7.0/apache-hugegraph-server-1.7.0
-> bin/init-store.sh
-> ```
->
-> 启动 Server 并加载内置样例图：
->
-> ```bash
-> bin/start-hugegraph.sh -p true
-> ```
->
-> 启动脚本会按 `rest-server.properties` 中的 `restserver.url` 轮询 `/graphs`，超时或进程失败时以非零状态退出。随后先检查服务版本，再读取样例顶点：
->
-> ```bash
-> curl -fsS http://127.0.0.1:8080/versions
-> curl --compressed -fsS \
->   http://127.0.0.1:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices
-> ```
->
-> 第一条请求应返回包含 `versions` 的 JSON；第二条应返回包含 `vertices` 的 JSON，且样例数据中可见 `marko`、`lop` 等顶点。仅检查进程存在或 HTTP 状态码，不足以证明图后端和业务请求正常。
->
-> **ToplingDB (Beta)**: 作为 RocksDB 的高性能替代方案，配置方式请参考: [ToplingDB 快速上手](https://hugegraph.apache.org/cn/blog/2025/10/09/toplingdb-quick-start/)
+1. [检查 Java 环境](#21-安装-java-11-jdk-11)，确认满足主线构建要求。
+2. [构建 master 源码](#33-从-master-源码构建)；下方命令使用该构建包中的 Server 子目录。
+3. [确认 RocksDB 配置](#4-配置)，再进入构建产物中的 Server 子目录。
+4. 初始化存储，然后启动服务并加载样例图，命令见下方。
+5. 请求 `/versions` 和样例图顶点接口，检查实际返回内容。
+{.steps}
+
+> [!NOTE]
+> RocksDB 是一个嵌入式的数据库，不需要手动安装部署，要求 GCC 版本 >= 4.3.0（GLIBCXX_3.4.10），如不满足，需要提前升级 GCC
+
+主线包内的 `conf/graphs/hugegraph.properties` 默认已设置 `backend=rocksdb` 和 `serializer=binary`。使用默认数据目录时无需修改；若改过后端或数据路径，先确认配置，再初始化存储。
+
+初始化数据库（首次启动，或在 `conf/graphs/` 下添加了新图配置后）：
+
+```bash
+cd apache-hugegraph-1.7.0/apache-hugegraph-server-1.7.0
+bin/init-store.sh
+```
+
+启动 Server 并加载内置样例图：
+
+```bash
+bin/start-hugegraph.sh -p true
+```
+
+启动脚本会按 `rest-server.properties` 中的 `restserver.url` 轮询 `/graphs`，超时或进程失败时以非零状态退出。随后先检查服务版本，再读取样例顶点：
+
+```bash
+curl -fsS http://127.0.0.1:8080/versions
+curl --compressed -fsS \
+  http://127.0.0.1:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices
+```
+
+第一条请求应返回包含 `versions` 的 JSON；第二条应返回包含 `vertices` 的 JSON，且样例数据中可见 `marko`、`lop` 等顶点。仅检查进程存在或 HTTP 状态码，不足以证明图后端和业务请求正常。
+
+**ToplingDB (Beta)**: 作为 RocksDB 的高性能替代方案，配置方式请参考: [ToplingDB 快速上手](https://hugegraph.apache.org/cn/blog/2025/10/09/toplingdb-quick-start/)
+
 
 #### 5.1.3 HBase
 
-> [!DETAILS]- 点击展开/折叠 HBase 配置及启动方法
-> > 用户需自行安装 HBase，要求版本 2.0 以上，[下载地址](https://hbase.apache.org/downloads.html)
->
+> [!NOTE]
+> 用户需自行安装 HBase，要求版本 2.0 以上，[下载地址](https://hbase.apache.org/downloads.html)
+
+> [!DETAILS]+ HBase 配置及启动方法
 > 修改 hugegraph.properties
 >
 > ```properties
@@ -483,11 +513,12 @@ HugeGraphServer 启动时会连接后端存储并检查其版本信息。如果�
 >
 > > 更多其它后端配置可参考[配置项介绍](/docs/config/config-option)
 
+
 #### 5.1.4 启动 server 的时候创建示例图
 
 在启动脚本时携带 `-p true` 参数，表示开启 preload，即创建示例图。
 
-```
+```text
 bin/start-hugegraph.sh -p true
 Starting HugeGraphServer in daemon mode...
 Connecting to HugeGraphServer (http://127.0.0.1:8080/graphs)......OK
@@ -603,7 +634,7 @@ _说明_
 
 1. 对于顶点、边等列表请求，Server 可以压缩响应。使用 `curl --compressed` 可自动解压：
 
-    ```
+    ```text
     curl --compressed -fsS "http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices"
     ```
 
@@ -614,11 +645,11 @@ _说明_
 >
 > 若将地址调整为 `0.0.0.0`，Server 将监听所有网卡。生产环境必须启用认证与授权、IP 白名单及最小权限授权，并保留和保护审计日志；不得将 Gremlin、Cypher 等接口直接暴露到公网。
 
-    ```
-    vim conf/rest-server.properties
-    
-    restserver.url=http://0.0.0.0:8080
-    ```
+```text
+vim conf/rest-server.properties
+
+restserver.url=http://0.0.0.0:8080
+```
 
 响应体如下：
 

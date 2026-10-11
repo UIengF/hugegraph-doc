@@ -14,22 +14,22 @@
   "historicalSitemapsRemoved": 0,
   "id": "latest",
   "migration": {
-    "changed": 10,
-    "files": 254,
+    "changed": 4,
+    "files": 262,
     "findings": 0,
     "knownFixes": 0,
     "residual": 0,
     "routeMigrations": 0
   },
   "name": "latest",
-  "nonEquivalentHreflangRemoved": 2,
+  "nonEquivalentHreflangRemoved": 0,
   "publishPath": "",
   "ref": "master",
-  "sha": "e6389aa7facd0e5630c498ba8034a3659935b374",
+  "sha": "ec9ae7b5b0f34b6e85b5afdcff4a980a62515dcb",
   "urlScoping": {
-    "files": 286,
+    "files": 308,
     "historicalHomeRedirects": 0,
-    "manifests": 284,
+    "manifests": 306,
     "searchFingerprints": 2,
     "searchRefs": 0,
     "urls": 0

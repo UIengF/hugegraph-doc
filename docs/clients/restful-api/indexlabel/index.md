@@ -16,7 +16,7 @@ Assuming PropertyKeys from version 1.1.3, VertexLabels from version 1.2.3, and E
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabels
 ```
 
@@ -62,7 +62,7 @@ POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabe
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabels
 ```
 
@@ -126,7 +126,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabel
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabels/personByCity
 ```
 
@@ -157,7 +157,7 @@ Deleting an IndexLabel will result in the deletion of related index data. This o
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabels/personByCity
 ```
 
@@ -189,7 +189,7 @@ Only `user_data` can be changed this way, `base_type`, `base_value` and `index_t
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/schema/indexlabels/personByCity?action=append
 ```
 

@@ -16,7 +16,7 @@ Variables 可以用来存储有关整个图的数据，数据按照键值对的�
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables/name
 ```
 
@@ -46,7 +46,7 @@ PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables/name
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables
 ```
 
@@ -68,7 +68,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables/name
 ```
 
@@ -90,7 +90,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables/name
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/variables/name
 ```
 

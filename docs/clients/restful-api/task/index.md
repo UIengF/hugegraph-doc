@@ -21,7 +21,7 @@ LLMS index: [llms.txt](/llms.txt)
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks?status=success
 ```
 
@@ -59,7 +59,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks?status=succ
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 ```
 
@@ -95,7 +95,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 ```
 
@@ -123,7 +123,7 @@ If you already created an async task via [Gremlin API](/docs/clients/restful-api
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2?action=cancel
 ```
 > cancel it in 10s. if more than 10s, the task may already be finished, then can't be cancelled.
@@ -170,7 +170,7 @@ Schedules an OLAP algorithm as an asynchronous task inside the server. The task 
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/algorithm/page_rank
 ```
 
@@ -213,7 +213,7 @@ Schedules a HugeGraph-Computer job as an asynchronous task. The computer job run
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/computer/page_rank
 ```
 

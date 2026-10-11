@@ -14,7 +14,7 @@ LLMS index: [llms.txt](/llms.txt)
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/versions
 ```
 
@@ -43,7 +43,7 @@ Returns the service name, the core version, the documentation links and the API 
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/
 ```
 
@@ -89,7 +89,7 @@ Lists every registered resource method, grouped by API group and resource class.
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/apis
 ```
 
@@ -131,7 +131,7 @@ Whether the error responses of the server carry the exception stack in the `exce
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/exception/trace
 ```
 
@@ -151,7 +151,7 @@ GET http://localhost:8080/exception/trace
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/exception/trace
 ```
 
@@ -183,7 +183,7 @@ The allowlist is only enforced when it is switched on, see the `white_ip.status`
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/whiteiplist
 ```
 
@@ -212,7 +212,7 @@ GET http://localhost:8080/whiteiplist
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/whiteiplist
 ```
 
@@ -256,7 +256,7 @@ POST http://localhost:8080/whiteiplist
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/whiteiplist?status=true
 ```
 
@@ -280,7 +280,7 @@ Attaches the [Arthas](https://arthas.aliyun.com/en/) agent to the running server
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/arthas
 ```
 

@@ -29,7 +29,7 @@ LLMS 索引： [llms.txt](/cn/llms.txt)
 
 ##### Method & Url
 
-```
+```text
 curl --compressed --get \
   --data-urlencode "gremlin=1+1" \
   http://127.0.0.1:8080/gremlin
@@ -141,7 +141,7 @@ curl --compressed -sS -X POST http://127.0.0.1:8080/gremlin \
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/gremlin
 ```
 

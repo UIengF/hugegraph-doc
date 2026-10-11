@@ -165,7 +165,7 @@ A random walk based PersonalRank algorithm should be likes this:
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/personalrank
 ```
 
@@ -322,7 +322,7 @@ In graph words:  to go out from the starting point, get the probability of going
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/neighborrank
 ```
 

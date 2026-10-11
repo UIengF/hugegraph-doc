@@ -178,7 +178,7 @@ public class Loader {
 
 The vertex IDs are:
 
-```
+```text
 "2:ripple",
 "1:vadas",
 "1:peter",
@@ -189,7 +189,7 @@ The vertex IDs are:
 
 The edge IDs are:
 
-```
+```text
 "S1:peter>2>>S2:lop",
 "S1:josh>2>>S2:lop",
 "S1:josh>2>>S2:ripple",
@@ -219,7 +219,7 @@ The K-out API allows you to find vertices that are exactly "depth" steps away fr
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/kout?source="1:marko"&max_depth=2
 ```
 
@@ -293,7 +293,7 @@ The K-out API allows you to find vertices that are exactly "depth" steps away fr
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/kout
 ```
 
@@ -460,7 +460,7 @@ Find all vertices that are reachable within depth steps, including the starting 
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/kneighbor?source=%221:marko%22&max_depth=2
 ```
 
@@ -535,7 +535,7 @@ Find all vertices that are reachable within depth steps from the starting vertex
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/kneighbor
 ```
 
@@ -761,7 +761,7 @@ Retrieve the common neighbors of two vertices.
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/sameneighbors?vertex=%221:marko%22&other=%221:josh%22
 ```
 
@@ -793,6 +793,12 @@ Find the common neighbors of two vertices:
 
 Compute the Jaccard similarity between two vertices (the intersection of the neighbors of the two vertices divided by the union of the neighbors of the two vertices).
 
+For neighbor sets `N(u)` and `N(v)` with a nonempty union, the definition above is:
+
+```math
+J(u,v) = \frac{|N(u) \cap N(v)|}{|N(u) \cup N(v)|}
+```
+
 ###### Params
 
 - vertex: ID of one vertex, required.
@@ -805,7 +811,7 @@ Compute the Jaccard similarity between two vertices (the intersection of the nei
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/jaccardsimilarity?vertex="1:marko"&other="1:josh"
 ```
 
@@ -851,7 +857,7 @@ Compute the N vertices with the highest Jaccard similarity to a specified vertex
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/jaccardsimilarity
 ```
 
@@ -911,7 +917,7 @@ Find the shortest path between a starting vertex and a target vertex based on th
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/shortestpath?source="1:marko"&target="2:ripple"&max_depth=3
 ```
 
@@ -961,7 +967,7 @@ Find all shortest paths between a starting vertex and a target vertex based on t
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/allshortestpaths?source="A"&target="Z"&max_depth=10
 ```
 
@@ -1025,7 +1031,7 @@ Find a weighted shortest path between a starting vertex and a target vertex base
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/weightedshortestpath?source="1:marko"&target="2:ripple"&weight="weight"&with_vertex=true
 ```
 
@@ -1110,7 +1116,7 @@ Starting from a vertex, find the shortest paths from that vertex to other vertic
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/singlesourceshortestpath?source="1:marko"&with_vertex=true
 ```
 
@@ -1262,7 +1268,7 @@ Finds the shortest paths between pairs of specified vertices.
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/multinodeshortestpath
 ```
 
@@ -1490,7 +1496,7 @@ Finds all paths based on conditions such as the starting vertex, destination ver
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/paths?source="1:marko"&target="1:josh"&max_depth=5
 ```
 
@@ -1565,7 +1571,7 @@ Finds all paths based on conditions such as the starting vertex, destination ver
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/paths
 ```
 
@@ -1664,7 +1670,7 @@ Finds all paths that meet the specified conditions based on a batch of starting 
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/customizedpaths
 ```
 
@@ -1855,7 +1861,7 @@ Finds all paths that meet the specified conditions based on a batch of starting 
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/templatepaths
 ```
 
@@ -2019,7 +2025,7 @@ Finds the intersection points based on the specified conditions, including start
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/crosspoints?source="2:lop"&target="2:ripple"&max_depth=5&direction=IN
 ```
 
@@ -2089,7 +2095,7 @@ Finds the intersection of destination vertices that satisfy the specified condit
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/customizedcrosspoints
 ```
 
@@ -2259,7 +2265,7 @@ For example: 1 -> 25 -> 775 -> 14690 -> 25, where the cycle is 25 -> 775 -> 1469
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/rings?source="1:marko"&max_depth=2
 ```
 
@@ -2328,7 +2334,7 @@ For example: 1 -> 25 -> 775 -> 14690 -> 2289 -> 18379, where 18379 is the bounda
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/rays?source="1:marko"&max_depth=2&direction=OUT
 ```
 
@@ -2417,7 +2423,7 @@ Queries a batch of "fusiform similar vertices" based on specified conditions. Wh
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/fusiformsimilarity
 ```
 
@@ -2524,7 +2530,7 @@ Used to query vertices that have high similarity with a group of vertices. For e
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/vertices?ids="1:marko"&ids="2:lop"
 ```
 
@@ -2603,7 +2609,7 @@ Obtain vertex shard information by specifying the shard size `split_size` (can b
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/vertices/shards?split_size=67108864
 ```
 
@@ -2656,7 +2662,7 @@ Retrieve vertices in batches based on the specified shard information (refer to 
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/vertices/scan?start=0&end=4294967295
 ```
 
@@ -2840,7 +2846,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/vertic
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/edges?ids="S1:josh>1>>S2:lop"&ids="S1:josh>1>>S2:ripple"
 ```
 
@@ -2895,7 +2901,7 @@ Retrieve shard information for edges by specifying the shard size (`split_size`)
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/edges/shards?split_size=4294967295
 ```
 
@@ -2952,7 +2958,7 @@ Batch retrieve edges by specifying shard information (refer to section 3.2.22.2 
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/edges/scan?start=0&end=3221225469
 ```
 
@@ -3073,7 +3079,7 @@ Compute the [Adamic-Adar](https://en.wikipedia.org/wiki/Adamic/Adar_index) index
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/adamicadar?vertex="1:marko"&other="1:josh"
 ```
 
@@ -3116,7 +3122,7 @@ Compute the resource allocation index of two vertices: the sum of the reciprocal
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/resourceallocation?vertex="1:marko"&other="1:josh"
 ```
 
@@ -3156,7 +3162,7 @@ Return the edges that exist between a source vertex and a target vertex.
 
 ###### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/edgeexist?source="1:marko"&target="2:lop"
 ```
 
@@ -3214,7 +3220,7 @@ Count the vertices reached from a starting vertex after a series of traversal st
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/{graph}/traversers/count
 ```
 

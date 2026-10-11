@@ -28,7 +28,7 @@ With authentication enabled, creation, cloning, deletion, clearing, display-name
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs
 ```
 
@@ -60,7 +60,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph
 ```
 
@@ -96,7 +96,7 @@ Since emptying the graph is a dangerous operation, we have added parameters for 
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/clear?confirm_message=I%27m+sure+to+delete+all+data
 ```
 
@@ -121,7 +121,7 @@ DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/clear?confirm_
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/cloneGraph?clone_graph_name=hugegraph
 ```
 
@@ -172,7 +172,7 @@ Clone a `non-auth` mode graph (set `Content-Type: application/json`)
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph-xx
 ```
 
@@ -260,7 +260,7 @@ Returns one entry per graph the current user can read, each carrying the graph c
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/profile
 ```
 
@@ -306,7 +306,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/profile
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph
 ```
 
@@ -344,7 +344,7 @@ A default graph is recorded per user, so the endpoints below act on behalf of th
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/default
 ```
 
@@ -368,7 +368,7 @@ POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/default
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/default
 ```
 
@@ -390,7 +390,7 @@ DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/default
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/default
 ```
 
@@ -426,7 +426,7 @@ Reloads the graphs the server holds, which is useful after the graph configurati
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/manage
 ```
 
@@ -534,7 +534,7 @@ Graph read permission (`space_member` or the graph owner) is required when authe
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode
 ```
 
@@ -567,13 +567,13 @@ Graph-space management permission (`space`) or graph ownership is required when 
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode
 ```
 
 ##### Request Body
 
-```
+```text
 "RESTORING"
 ```
 
@@ -606,7 +606,7 @@ Graph read permission (`space_member` or the graph owner) is required when authe
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/graph_read_mode
 ```
 
@@ -637,13 +637,13 @@ Graph-space management permission (`space`) is required when authentication is e
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/graph_read_mode
 ```
 
 ##### Request Body
 
-```
+```text
 "OLTP_ONLY"
 ```
 
@@ -678,7 +678,7 @@ Graph-space management permission (`space`) or graph ownership is required when 
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/snapshot_create
 ```
 
@@ -709,7 +709,7 @@ Graph-space management permission (`space`) or graph ownership is required when 
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/snapshot_resume
 ```
 
@@ -742,7 +742,7 @@ Graph-space management permission (`space`) is required when authentication is e
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/compact
 ```
 
@@ -786,7 +786,7 @@ Graph-space membership (`space_member`) is required when authentication is enabl
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/list_peers
 ```
 
@@ -814,7 +814,7 @@ The key of the returned object is the raft group name.
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/get_leader
 ```
 
@@ -836,7 +836,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/get_leader
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/transfer_leader?endpoint=127.0.0.1:8282
 ```
 
@@ -858,7 +858,7 @@ POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/transfer_le
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/set_leader?endpoint=127.0.0.1:8282
 ```
 
@@ -882,7 +882,7 @@ This schedules an asynchronous task, see [Task API](./task).
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/add_peer?endpoint=127.0.0.1:8284
 ```
 
@@ -906,7 +906,7 @@ This schedules an asynchronous task, see [Task API](./task).
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/raft/remove_peer?endpoint=127.0.0.1:8284
 ```
 

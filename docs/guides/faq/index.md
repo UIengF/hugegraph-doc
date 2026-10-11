@@ -48,7 +48,7 @@ LLMS index: [llms.txt](/llms.txt)
   
   Check whether the vertex id contains `+`, `space`, `/`, `?`, `%`, `&`, and `=` reserved characters of these `URLs`.  If they exist, they need to be encoded. The following table gives the coded values:
   
-  ```
+  ```text
   special character | encoded value
   ------------------| -------------
   +                 | %2B

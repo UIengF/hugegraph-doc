@@ -14,7 +14,7 @@ LLMS 索引： [llms.txt](/cn/llms.txt)
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/rebuild/indexlabels/personByCity
 ```
 

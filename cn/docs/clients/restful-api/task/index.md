@@ -21,7 +21,7 @@ LLMS 索引： [llms.txt](/cn/llms.txt)
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks?status=success
 ```
 
@@ -59,7 +59,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks?status=succ
 
 ##### Method & Url
 
-```
+```text
 GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 ```
 
@@ -95,7 +95,7 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 
 ##### Method & Url
 
-```
+```text
 DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 ```
 
@@ -123,7 +123,7 @@ DELETE http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2
 
 ##### Method & Url
 
-```
+```text
 PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2?action=cancel
 ```
 
@@ -171,7 +171,7 @@ PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/tasks/2?action=ca
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/algorithm/page_rank
 ```
 
@@ -214,7 +214,7 @@ POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/algorithm/p
 
 ##### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/jobs/computer/page_rank
 ```
 

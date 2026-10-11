@@ -10,7 +10,8 @@ LLMS index: [llms.txt](/llms.txt)
 
 The `hugegraph-server` module contains `hugegraph-core`, `hugegraph-api`, `hugegraph-dist`, and storage adapters. Core implements the property graph model, transactions, and TinkerPop interfaces. API provides the HTTP service and delegates client requests to Core. Graph data is stored in RocksDB (the default standalone backend), HStore (distributed), or HBase.
 
-> ⚠️ **Version scope**: Download examples use the ASF HugeGraph 1.7.0 release. Source builds, configuration defaults, and startup behavior follow `apache/hugegraph` master. A master build is not an ASF release artifact, even if its version number matches 1.7.0. This guide covers RocksDB, HStore, and HBase; see [1.5.x documentation](https://github.com/apache/hugegraph-doc/blob/release-1.5.0/content/en/docs/quickstart/hugegraph/hugegraph-server.md) for other legacy backends.
+> [!WARNING]
+> **Version scope**: Download examples use the ASF HugeGraph 1.7.0 release. Source builds, configuration defaults, and startup behavior follow `apache/hugegraph` master. A master build is not an ASF release artifact, even if its version number matches 1.7.0. This guide covers RocksDB, HStore, and HBase; see [1.5.x documentation](https://github.com/apache/hugegraph-doc/blob/release-1.5.0/content/en/docs/quickstart/hugegraph/hugegraph-server.md) for other legacy backends.
 
 > Naming: `HugeGraph` means the overall project or main repository, `hugegraph-server` is its Server module, and `HugeGraphServer` is the Java service class. Server below means the running graph database service.
 
@@ -28,6 +29,23 @@ flowchart TD
     S --> Q["Request /versions and graph vertices"]
 ```
 
+
+The map uses short labels for the repository modules described above. `server`, `core`, `api`, `dist`, `pd`, and `store` refer to the corresponding
+`hugegraph-` modules; `dist` packages the distribution.
+
+```markmap
+---
+markmap:
+  spacingHorizontal: 40
+---
+# HugeGraph
+## server
+- core
+- api
+- dist
+## pd
+## store
+```
 
 ## 2 Dependency for Building/Running
 
@@ -47,11 +65,11 @@ The `hugegraph-server` module in HugeGraph 1.7.0 is compiled with Java 11. Runni
 
 There are four ways to deploy the Server service:
 
-1. Use a Docker container for test or development.
-1. Download the binary tarball.
-1. Compile the source code.
-1. Use the legacy one-click deployment tool.
-{.steps}
+- [Docker container](#31-use-docker-container-convenient-for-testdev) Quickly start a Server service for testing or development.
+- [ASF release archive](#32-download-a-released-archive) Download a released tarball and verify it before installation.
+- [master source](#33-build-from-master-source) Build the development branch; its output is not an ASF release archive.
+- [Legacy one-click deployment (outdated)](#34-one-click-deployment-outdated) Reference for the older deployment workflow.
+{.cards}
 
 > [!WARNING]
 > **Production requires authentication and restricted network access**
@@ -75,7 +93,8 @@ If you use Docker Desktop, you can set the options as follows:
     <img src="/docs/images/images-server/31docker-option.jpg" alt="Docker Desktop settings for a HugeGraph container" style="width:33%;">
 </div>
 
-> **Note**: The Docker Compose files use bridge networking (`hg-net`) and work on Linux and Mac (Docker Desktop). For the 3-node distributed cluster on Mac (Docker Desktop), allocate at least **12 GB** of memory (Settings → Resources → Memory). On Linux, Docker uses host memory directly.
+> [!NOTE]
+> The Docker Compose files use bridge networking (`hg-net`) and work on Linux and Mac (Docker Desktop). For the 3-node distributed cluster on Mac (Docker Desktop), allocate at least **12 GB** of memory (Settings → Resources → Memory). On Linux, Docker uses host memory directly.
 
 Use `docker compose` to manage multiple HugeGraph services from one configuration. Four Compose files are available in the [`docker/`](https://github.com/apache/hugegraph/tree/master/docker) directory:
 
@@ -100,7 +119,7 @@ The standalone `docker-compose.yml` example uses `hugegraph/hugegraph:1.7.0`; it
 
 See [docker/README.md](https://github.com/apache/hugegraph/blob/master/docker/README.md) for the full setup guide.
 
-> Note: 
+> [!NOTE]
 >
 > 1. HugeGraph Docker images are provided as a convenient way to start HugeGraph quickly, but they are not official ASF distribution artifacts. You can find more details in the [ASF Release Distribution Policy](https://infra.apache.org/release-distribution.html#dockerhub).
 >
@@ -110,7 +129,7 @@ See [docker/README.md](https://github.com/apache/hugegraph/blob/master/docker/RE
 
 This example uses HugeGraph 1.7.0. For other versions, confirm the release and filenames in the [ASF download directory](https://downloads.apache.org/hugegraph/). A master source build is not a released binary.
 
-```bash {title="download-release.sh" wrap=true collapse=2}
+```bash {wrap=true}
 cd /path/to/downloads
 wget https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz
 wget https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz.sha512
@@ -137,7 +156,7 @@ Install `wget` or `curl` before building.
 
 Download HugeGraph source:
 
-```bash {title="build-from-source.sh" wrap=true collapse=2}
+```bash {wrap=true}
 git clone --branch master https://github.com/apache/hugegraph.git
 ```
 
@@ -172,6 +191,8 @@ mvn package -DskipTests -ntp -Drocksdb-only
 
 > [!DETAILS]- Outdated tools
 > #### 3.4 One-click deployment (Outdated)
+>
+> **Outdated** This status applies only to this one-click deployment entry.
 >
 > HugeGraph-Tools provides a one-click deployment command that downloads, extracts, configures, and starts the Server service and HugeGraph-Hubble. These tools are included in the HugeGraph-Toolchain distribution.
 >
@@ -227,10 +248,13 @@ Since the configuration (hugegraph.properties) and startup steps required by var
 
 #### 5.1.1 Distributed Storage (HStore)
 
-> [!DETAILS]- Expand/collapse distributed storage configuration and startup
+First deploy PD and Store; see the [PD Quick Start](/docs/quickstart/hugegraph/hugegraph-pd/) and [Store Quick Start](/docs/quickstart/hugegraph/hugegraph-hstore/).
+
+> [!WARNING]
+> `umask 077` protects the new `.env`, but `set-hubble-pd-password.sh` sets generated `.local.properties` permissions to `0644`, making the PD secret readable by other local users. This example assumes trusted local users. On shared hosts, set ownership and read permissions for the Hubble runtime user so Hubble can read the files while unauthorized users cannot. Keeping files untracked does not replace file permission controls.
+
+> [!DETAILS]+ Distributed storage configuration and startup
 > > Distributed storage, introduced after HugeGraph 1.5.0, uses HugeGraph-PD and HugeGraph-Store for distributed data storage and computing.
->
-> First deploy PD and Store; see the [PD Quick Start](/docs/quickstart/hugegraph/hugegraph-pd/) and [Store Quick Start](/docs/quickstart/hugegraph/hugegraph-hstore/).
 >
 > After PD and Store are running:
 >
@@ -368,10 +392,7 @@ Since the configuration (hugegraph.properties) and startup steps required by var
 >
 > Create the authentication environment in `docker/` and generate HStore Hubble configuration. Replace the example administrator password; because `.env` uses single quotes, the password must contain neither single quotes nor newlines. The script generates random JWT and PD secrets and writes the PD secret to two untracked `.local.properties` files mounted by HStore Compose:
 >
-> > [!WARNING]
-> > `umask 077` protects the new `.env`, but `set-hubble-pd-password.sh` sets generated `.local.properties` permissions to `0644`, making the PD secret readable by other local users. This example assumes trusted local users. On shared hosts, set ownership and read permissions for the Hubble runtime user so Hubble can read the files while unauthorized users cannot. Keeping files untracked does not replace file permission controls.
->
-> ```bash
+> ```bash {wrap=true collapse=9}
 > (
 >   set -eu
 >   command -v openssl >/dev/null
@@ -420,41 +441,49 @@ Since the configuration (hugegraph.properties) and startup steps required by var
 
 The minimal standalone flow below uses a master build and preloads sample data to verify graph reads and writes.
 
-> [!DETAILS]- Expand/collapse RocksDB configuration and startup
-> > RocksDB is embedded and needs no separate deployment. GCC ≥ 4.3.0 (GLIBCXX_3.4.10) is required; upgrade first if needed.
->
-> Master `conf/graphs/hugegraph.properties` already sets `backend=rocksdb` and `serializer=binary`. Keep the defaults if using default data directories; otherwise check your backend and paths before initialization.
->
-> Initialize storage on first startup or after adding graph configuration under `conf/graphs/`:
->
-> ```bash
-> cd apache-hugegraph-1.7.0/apache-hugegraph-server-1.7.0
-> bin/init-store.sh
-> ```
->
-> Start Server and preload the built-in sample graph:
->
-> ```bash
-> bin/start-hugegraph.sh -p true
-> ```
->
-> The startup script polls `/graphs` at configured `restserver.url` and exits nonzero on timeout or process failure. Check service version, then read sample vertices:
->
-> ```bash
-> curl -fsS http://127.0.0.1:8080/versions
-> curl --compressed -fsS \
->   http://127.0.0.1:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices
-> ```
->
-> The first response should contain `versions`; the second should contain `vertices` with sample names such as `marko` and `lop`. A process check or HTTP status alone does not prove backend and business request health.
->
-> **ToplingDB (Beta)**: A high-performance RocksDB alternative; see the [ToplingDB Quick Start](https://hugegraph.apache.org/blog/2025/10/09/toplingdb-quick-start/).
+1. [Check Java](#21-install-java-11-jdk-11) against the master build requirements.
+2. [Build master source](#33-build-from-master-source); the commands below use its nested Server directory.
+3. [Confirm RocksDB configuration](#4-configuration), then enter the build output's nested Server directory.
+4. Initialize storage, then start the service with sample data using the commands below.
+5. Request `/versions` and sample graph vertices, and check the actual response contents.
+{.steps}
+
+> [!NOTE]
+> RocksDB is embedded and needs no separate deployment. GCC ≥ 4.3.0 (GLIBCXX_3.4.10) is required; upgrade first if needed.
+
+Master `conf/graphs/hugegraph.properties` already sets `backend=rocksdb` and `serializer=binary`. Keep the defaults if using default data directories; otherwise check your backend and paths before initialization.
+
+Initialize storage on first startup or after adding graph configuration under `conf/graphs/`:
+
+```bash
+cd apache-hugegraph-1.7.0/apache-hugegraph-server-1.7.0
+bin/init-store.sh
+```
+
+Start Server and preload the built-in sample graph:
+
+```bash
+bin/start-hugegraph.sh -p true
+```
+
+The startup script polls `/graphs` at configured `restserver.url` and exits nonzero on timeout or process failure. Check service version, then read sample vertices:
+
+```bash
+curl -fsS http://127.0.0.1:8080/versions
+curl --compressed -fsS \
+  http://127.0.0.1:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices
+```
+
+The first response should contain `versions`; the second should contain `vertices` with sample names such as `marko` and `lop`. A process check or HTTP status alone does not prove backend and business request health.
+
+**ToplingDB (Beta)**: A high-performance RocksDB alternative; see the [ToplingDB Quick Start](https://hugegraph.apache.org/blog/2025/10/09/toplingdb-quick-start/).
 
 
 #### 5.1.3 HBase
-> [!DETAILS]- Click to expand/collapse HBase configuration and startup methods
-> > users need to install HBase by themselves, requiring version 2.0 or above,[download link](https://hbase.apache.org/downloads.html)
->
+> [!NOTE]
+> users need to install HBase by themselves, requiring version 2.0 or above,[download link](https://hbase.apache.org/downloads.html)
+
+> [!DETAILS]+ HBase configuration and startup methods
 > Update hugegraph.properties
 >
 > ```properties
@@ -490,7 +519,7 @@ The minimal standalone flow below uses a master build and preloads sample data t
 #### 5.1.4 Create an example graph when startup
 Pass the `-p true` argument when starting the script to enable `preload`, which creates a sample graph.
 
-```
+```text
 bin/start-hugegraph.sh -p true
 Starting HugeGraphServer in daemon mode...
 Connecting to HugeGraphServer (http://127.0.0.1:8080/graphs)......OK
@@ -606,13 +635,13 @@ _explanation_
 
 1. Server can compress vertex, edge, and other list responses. Use `curl --compressed` for automatic decompression:
 
-    ```
+    ```text
     curl --compressed -fsS "http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/graph/vertices"
     ```
 
 2. The default listener is `127.0.0.1`, inaccessible directly from other machines.
 
-    ```
+    ```text
     vim conf/rest-server.properties
     
     restserver.url=http://0.0.0.0:8080
@@ -625,7 +654,7 @@ _explanation_
 
 response body:
 
-```javasript
+```javascript
 {
     "vertices": [
         {

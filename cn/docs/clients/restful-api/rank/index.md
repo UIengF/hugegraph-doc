@@ -152,7 +152,7 @@ schema.edgeLabel("rating")
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/personalrank
 ```
 
@@ -307,7 +307,7 @@ public class Loader {
 
 ###### Method & Url
 
-```
+```text
 POST http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/traversers/neighborrank
 ```
 
