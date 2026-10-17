@@ -25,8 +25,8 @@ PD 监听三个端口：
 #### 2.1 前置条件
 
 - 操作系统：Linux 或 macOS（Windows 尚未经过完整测试）
-- Java 版本：≥ 11
-- Maven 版本：≥ 3.5.0
+- Java 版本：HugeGraph 1.8.0+ 使用 Java 17（Maven 源码构建仅接受 JDK 17；启动脚本拒绝低于 17 的运行时；1.7.0 是最后一个支持 Java 11 的版本）
+- Maven 版本：≥ 3.6.3（从源码编译时）
 
 ### 3 部署
 
@@ -41,7 +41,7 @@ Apache 下载页目前提供 1.7.0 的完整二进制包，其中包含 PD、Sto
 
 ```bash
 # 1.7.0 是项目孵化期发布的历史版本，因此文件名和目录名仍带 incubating
-wget https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz
+curl -fLO --connect-timeout 10 --max-time 1800 https://downloads.apache.org/hugegraph/1.7.0/apache-hugegraph-incubating-1.7.0.tar.gz
 tar zxf apache-hugegraph-incubating-1.7.0.tar.gz
 cd apache-hugegraph-incubating-1.7.0/apache-hugegraph-pd-incubating-1.7.0
 ```
@@ -302,16 +302,21 @@ HG_PD_RAFT_PEERS_LIST: pd0:8610,pd1:8610,pd2:8610
 ./bin/start-hugegraph-pd.sh
 ```
 
-脚本要求 `PATH` 或 `JAVA_HOME` 中有 11 及以上版本的 JDK；如果发现已有 Java 进程在使用本安装目录的 `conf` 目录，脚本会直接退出，不做任何事。
+脚本要求 `PATH` 或 `JAVA_HOME` 中有 17 及以上版本的 JDK（1.7.0 要求 11 及以上）；如果发现已有 Java 进程在使用本安装目录的 `conf` 目录，脚本会直接退出，不做任何事。
 
-支持的参数：
+下文的生命周期说明适用于当前主线构建；上文下载的 1.7.0 启动脚本不包含这些修复。
+支持的参数如下，GC 的版本限制见下文：
 
 | 参数 | 取值 | 默认值 | 描述 |
 |------|------|--------|------|
 | `-d` | `true`、`false` | `true` | 守护进程模式，详见下文。 |
-| `-g` | `zgc`、`ZGC` | 不设置 | 垃圾回收器。不带该参数即使用默认的 G1GC；填其他值（包括 `g1`）会导致启动中止。 |
+| `-g` | 见下文版本限制 | 不设置 | 选择垃圾回收器；不支持的参数会中止启动。 |
 | `-j` | JVM 参数 | 空 | 额外的 JVM 参数，例如 `-j "-Xmx8g -Xms8g"`。 |
 | `-y` | `true`、`false` | `false` | 挂载 OpenTelemetry Java agent。首次使用时会把 agent 下载到 `plugins/` 并校验 MD5，trace 通过 gRPC 上报到 `http://127.0.0.1:4317`。 |
+
+master 构建接受 `g1`、`G1`、`zgc` 和 `ZGC`。
+上文下载的 1.7.0 启动脚本仅接受显式指定 `zgc` 或 `ZGC`；`-g g1`、`-g G1` 和其他参数会中止启动。
+默认路径请省略 `-g`；参数被拒绝时，查看 `logs/hugegraph-pd-stdout.log`。
 
 `-d` 参数控制守护进程模式：
 
@@ -529,3 +534,5 @@ curl -u "store:${HG_PD_AUTH_SECRET_KEY:?请先设置 PD 部署密钥}" \
 两个 `log` 接口接受形如 `{"startTime": "...", "endTime": "..."}` 的时间范围，`yyyy-MM-dd HH:mm:ss` 和 `yyyy-MM-dd` 都是可接受的格式。
 
 PD 以 `hg` 前缀注册自己的指标，因此 `/actuator/prometheus` 除标准 JVM 指标外还会暴露 `hg_up`、`hg_graphs`、`hg_stores` 和 `hg_terms`，在存在图之后还会有按图统计的分区和大小指标。
+
+在 1.7.0 之后的版本中，PD 还会为每个已注册的 Store 导出 `hg_store_state{store="<id>",state="<state>"}`：Store 当前状态（`Unknown`、`Pending`、`Up`、`Offline`、`Exiting` 或 `Tombstone`）对应的序列为 `1`，其余为 `0`；以及 `hg_store_leader_count{store="<id>"}`，即 leader 位于该 Store 上的分片组数量。重建后的 Store 在 leader 迁回之前会报告 `0`。所有 PD 成员读取的是同一份复制的元数据，因此聚合这些序列前请先只选取一个实例。

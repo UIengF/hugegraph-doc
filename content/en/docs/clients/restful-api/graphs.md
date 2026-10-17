@@ -215,6 +215,21 @@ Create a graph (set `Content-Type: application/json`)
 
 Graph-space management permission (`space`) is required when authentication is enabled.
 
+Stop writes and tasks on every Server that uses the graph before deletion, and keep them stopped during failures and retries.
+Do not recreate the same graph name until deletion has completed and been confirmed on every Server. Notifications are not a cluster-wide barrier.
+
+On the deleting Server, scheduler shutdown fences new task admission and waits for actual executions, cancellation callbacks and transaction cleanup.
+If the configured task-drain wait times out (`task.wait_timeout`, seconds), deletion is refused before data, configuration or metadata removal; retry after
+the owners exit. Task admission stays closed after this refusal.
+To resume ordinary graph use before destructive cleanup, keep writes and task producers stopped;
+wait for all admitted tasks and cancellation cleanup to finish, then restart Server. A restart does not restore data or metadata already removed.
+Closing the scheduler alone retains persistent work that has not started.
+
+Deletion is not transactional. A failure after destructive cleanup does not restore removed data or metadata. An uncertain owner or native-resource cleanup
+needs manual inspection; do not force-remove the scheduler or resume writes just because a task Future is done.
+In PD deployments with `graph.load_from_local_config=true`, if deletion is refused because the graph uses local configuration,
+removing its configuration file and restarting Server stops Server from loading the graph, but leaves its backend data in place.
+
 ##### Params
 
 **Path parameters**
@@ -409,7 +424,9 @@ GET http://localhost:8080/graphspaces/DEFAULT/graphs/default
 
 #### 6.1.10 Reload the graphs of the graphspace
 
-Reloads the graphs the server holds, which is useful after the graph configuration has changed outside the server.
+Apply graph configuration changes by restarting Server. Hot-reload recovery is deferred; do not use this endpoint for configuration maintenance.
+In the current non-PD path, reload invokes graph deletion and can clear backend data. Keep writes and tasks stopped until Server has restarted and the
+intended graphs have been verified. The request and response below document the API shape, not a maintenance or recovery guarantee.
 
 ##### Params
 
@@ -576,6 +593,8 @@ PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode
 
 > Allowed graph mode values are: NONE, RESTORING, MERGING, LOADING
 
+While loading owners are active, this enum PUT rejects all mode changes, including `"LOADING"`. Release the owners after their import workers stop.
+
 ##### Response Status
 
 ```javascript
@@ -659,6 +678,84 @@ PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/graph_read_mode
     "graph_read_mode": "OLTP_ONLY"
 }
 ```
+
+#### 6.3.5 LOADING ownership {#loading-ownership}
+
+Starting with HugeGraph 1.8.0, the Server provides the protocol 1 endpoints for LOADING ownership
+(requires a Server whose `GET .../mode/owners` returns `protocol: 1` and a matching Loader; current `master` does not include it yet);
+Loader integration requires a matching 1.8.0 or newer client.
+Released packages, earlier 1.8 builds, and current `master` builds lack this protocol. Support for the `LOADING` enum alone does not imply support for it.
+With authentication enabled, both endpoints use the mode setter's permissions: graph-space management (`space`) or graph ownership, with STATUS write
+authorization. Server binds the handle to the authenticated principal; a token grants no permission. Keep the same identity for acquire, release and retries.
+
+```text
+GET http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode/owners
+```
+
+The `200` capability response contains the graph-instance UUID, current nonnegative epoch, and state revision:
+
+```json
+{
+    "protocol": 1,
+    "instance": "<instance UUID>",
+    "epoch": 0,
+    "revision": 0
+}
+```
+
+Generate a new lowercase hyphenated UUID `token` for each import, retain the returned `instance` and `epoch`,
+and acquire with `Content-Type: application/json`:
+
+```text
+PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode/owners
+```
+
+```json
+{
+    "action": "acquire",
+    "instance": "<instance UUID>",
+    "epoch": 0,
+    "token": "<import UUID>"
+}
+```
+
+An acquire succeeded only when the response returns `200` with `state: "active"`, echoing `protocol`, `instance`, `epoch`, `token`, and `mode: "LOADING"`.
+A `200` response with `state: "released"` means the handle is finished or was preemptively released; it does not grant ownership. In that case, stop and drain
+that import attempt, then start a new attempt with a fresh GET for `instance` and `epoch` and generate a new token.
+Release with `action: "release"` and the same handle; its response has `state: "released"` and the effective graph mode. Calling release before acquire is
+recorded and causes a subsequent acquire with that handle to return `released`.
+Keep one handle for retries; Server checks its principal, instance and epoch. A released handle cannot acquire again.
+
+To clear orphaned handles after an abnormal exit (e.g. `kill -9`), an administrator can execute an explicit recovery request:
+
+```text
+PUT http://localhost:8080/graphspaces/DEFAULT/graphs/hugegraph/mode/owners
+```
+
+```json
+{
+    "action": "recover",
+    "instance": "<instance UUID>",
+    "epoch": 0,
+    "revision": 0,
+    "confirm": "I'm sure all imports have stopped"
+}
+```
+
+Administrator recovery requires the global administrator role (`admin`). Callers must supply the current `revision`, `instance`, and `epoch`
+obtained from `GET /mode/owners`, plus the confirmation string `confirm: "I'm sure all imports have stopped"`.
+If the provided `revision` does not match the Server's current state, the request is rejected with HTTP `409 Conflict`.
+On success, the Server clears all active owners, resets graph mode to `NONE`, and increments the epoch, returning HTTP `200` with
+`state: "recovered"` and `mode: "NONE"`.
+
+The first owner requires `NONE`. Other owners share owner-managed `LOADING`; the last release restores `NONE`.
+Manually set `LOADING`, `RESTORING` and `MERGING` are not adopted. While owners are active, the legacy enum PUT rejects mode changes.
+
+This protects ordinary imports on one live Server graph instance, with the handle bound to its authenticated principal, instance and epoch.
+It provides no cross-Server coordination, data-write isolation or automatic expiry. Use a fixed direct Server endpoint and release after the import stops.
+The upgraded Loader falls back to old behavior only for an unsupported-route `404` from its ownership probe; other errors remain failures.
+Graph-source and restore imports retain their original enum-mode behavior. See
+[Loader compatibility and recovery](/docs/quickstart/toolchain/hugegraph-loader/#loading-ownership).
 
 ### 6.4 Snapshot
 
