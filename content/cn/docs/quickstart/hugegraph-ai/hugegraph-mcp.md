@@ -95,13 +95,13 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 | 未设置，或 `v2_core` | 16 | 默认工具集，包含结构化查询和持久化写入计划工具 |
 | `v1` | 10 | 兼容工具集，保留较早的工具入口 |
 
-不要填写 `v2`；它不是该版本支持的工具集名称。
+其他任何值（包括 `v2`、`core`、`legacy` 或空字符串），在 1.7.1 中均会记录错误日志并回退到包含 10 个工具的 `v1` 兼容工具集。
 两种工具集的 `mcp_tool_contract_version` 均为 `2.0`，该字段表示工具契约，不表示包版本。
 
-### 新名称迁移（尚未发布）
+### 新名称迁移（apache/hugegraph-ai#382 提案，尚未合并）
 
-命名修复将默认工具集改名为 `core`，兼容工具集改名为 `legacy`。
-本节描述待发布的改动，**不适用于上面的 1.7.1 安装命令**。
+该提案计划将默认工具集改名为 `core`，兼容工具集改名为 `legacy`。
+本节描述尚未合并的改动，**不适用于上面的 1.7.1 安装命令**。
 新版本号和升级命令应在正式发布后更新。
 
 - `v2_core` 对应 `core`，`v1` 对应 `legacy`；旧值作为兼容别名保留，并输出迁移警告。
@@ -157,6 +157,8 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 |---|---|---|
 | `HUGEGRAPH_URL` | `http://127.0.0.1:8080` | MCP 进程访问的 HugeGraph 地址 |
 | `HUGEGRAPH_GRAPH_PATH` | `DEFAULT/hugegraph` | `GRAPH_SPACE/GRAPH_NAME` |
+| `HUGEGRAPH_GRAPHSPACE` | 未设置 | 覆盖 `HUGEGRAPH_GRAPH_PATH` 中的 graphspace |
+| `HUGEGRAPH_GRAPH` | 未设置 | 覆盖 `HUGEGRAPH_GRAPH_PATH` 中的图名 |
 | `HUGEGRAPH_USER` | `admin` | HugeGraph 用户名 |
 | `HUGEGRAPH_PASSWORD` | 空 | HugeGraph 密码 |
 | `HUGEGRAPH_MCP_TOOLSET` | `v2_core` | 该版本支持 `v2_core`、`v1` |
@@ -165,7 +167,7 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 | `HUGEGRAPH_MCP_ADMIN_MODE` | `false` | 开放符合条件的管理操作 |
 | `HUGEGRAPH_AI_URL` | `http://127.0.0.1:8001` | HugeGraph-LLM 服务地址 |
 | `HUGEGRAPH_AI_TOKEN` | 未设置 | HugeGraph-LLM bearer token |
-| `HUGEGRAPH_AI_GRAPH_URL` | 未设置 | 不用于改变 AI 服务目标；当前源码已弃用并忽略此项 |
+| `HUGEGRAPH_AI_GRAPH_URL` | 未设置 | 不用于改变 AI 服务目标；当前源码已忽略此项 |
 | `HUGEGRAPH_AI_TIMEOUT_SECONDS` | `30` | AI HTTP 请求超时，单位为秒 |
 | `HUGEGRAPH_MCP_STATE_DIR` | XDG 状态目录或 `~/.local/state/hugegraph-mcp` | 写入计划与回执的持久化目录 |
 
@@ -188,13 +190,12 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 应在 AI 服务侧配置 `GRAPH_URL` 为容器可访问的地址，例如 `http://server:8080`，并设置 `GRAPH_NAME`、`GRAPH_SPACE`
 与 MCP 目标一致；不要让容器通过 `127.0.0.1` 访问宿主机上的图服务。修改 MCP 地址不会修改 AI 服务目标。
 
-**当前 AI 源码的刷新前置条件**：服务侧还需 `ENABLE_LOGIN=true`、`HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
+**AI 提案中的刷新前置条件**：服务侧还需 `ENABLE_LOGIN=true`、`HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
 及强 `USER_TOKEN`；MCP 的 `HUGEGRAPH_AI_TOKEN` 必须携带有效认证。旧部署可能没有这些写入门禁，需核对服务版本。
-当前 MCP 源码要求 `GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，
-再传入预期图名与 graphspace，由服务校验后刷新；缺少协议的旧服务会被拒绝。这不证明两侧连接同一台物理服务器。
-此协议属于当前源码及下一次发行，不是上述已发布 `1.7.1` 安装示例的保证。
-
-使用 MCP 默认目标 `DEFAULT/hugegraph` 时，AI 服务须明确设置 `GRAPH_NAME=hugegraph`、`GRAPH_SPACE=DEFAULT`；未设置或 null 的 graphspace 不通过严格目标校验。
+在尚未合并的提案 [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) 中，MCP 要求
+`GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，再传入预期图名与 graphspace
+由服务校验后刷新；缺少协议的旧服务会被拒绝。这不证明两侧连接同一台物理服务器。此协议属于后续版本规划，
+不适用于上述已发布的 `1.7.1` 安装示例。
 
 ## 常见问题
 

@@ -95,13 +95,13 @@ Version `1.7.1` accepts the following configuration names:
 | Unset, or `v2_core` | 16 | Default toolset, including structured queries and persistent write-plan tools |
 | `v1` | 10 | Compatibility toolset retaining earlier tool entry points |
 
-Do not use `v2`; it is not a supported toolset name in this release.
+Any other value, including `v2`, `core`, `legacy` or an empty string, falls back to the 10-tool `v1` set in 1.7.1 and logs an error.
 Both toolsets report `mcp_tool_contract_version="2.0"`. This field describes the tool contract, not the package version.
 
-### New Names (Not Yet Released)
+### New Names (Proposed in apache/hugegraph-ai#382)
 
-The naming fix renames the default toolset to `core` and the compatibility toolset to `legacy`.
-This section describes an unreleased change and **does not apply to the 1.7.1 installation command above**.
+The proposed naming fix renames the default toolset to `core` and the compatibility toolset to `legacy`.
+This section describes an unmerged change and **does not apply to the 1.7.1 installation command above**.
 The release version and upgrade command must be updated after publication.
 
 - `v2_core` maps to `core`, and `v1` maps to `legacy`. Old values remain compatibility aliases and emit a migration warning.
@@ -123,8 +123,8 @@ Use the tool schema returned to your client for exact parameters.
 | Graph import | `import_graph_data_tool` | AI-backed `extract`; preview-only `ingest`; `table` is currently disabled |
 | Graph deletion | `delete_graph_data_tool` | Exact edge deletion can be confirmed; vertex deletion is preview-only |
 | Property changes | `mutate_graph_properties_tool` | Preview-only; confirmation is currently disabled |
-| AI generation and extraction | `generate_gremlin_tool`, `extract_graph_data_tool` | Generate queries or candidate graph data without executing generated queries |
-| Embedding refresh | `refresh_vid_embeddings_tool` | Requires AI, admin mode, writes enabled, and explicit confirmation; see current-source service gates below |
+| AI generation and extraction | `generate_gremlin_tool`, `extract_graph_data_tool` | Generate queries or graph data without executing generated queries |
+| Embedding refresh | `refresh_vid_embeddings_tool` | Requires AI, admin mode, writes enabled, and confirmation; see service gates below |
 | Raw Gremlin | `execute_gremlin_read_tool`, `execute_gremlin_write_tool` | Both return `FEATURE_DISABLED`; admin mode cannot override this |
 
 The compatibility toolset excludes `inspect_schema_tool`, `query_graph_data_tool`, `mutate_graph_properties_tool`,
@@ -158,6 +158,8 @@ The following defaults apply to published version `1.7.1`. HugeGraph credentials
 |---|---|---|
 | `HUGEGRAPH_URL` | `http://127.0.0.1:8080` | HugeGraph address reachable from the MCP process |
 | `HUGEGRAPH_GRAPH_PATH` | `DEFAULT/hugegraph` | `GRAPH_SPACE/GRAPH_NAME` |
+| `HUGEGRAPH_GRAPHSPACE` | Unset | Overrides the graphspace in `HUGEGRAPH_GRAPH_PATH` |
+| `HUGEGRAPH_GRAPH` | Unset | Overrides the graph name in `HUGEGRAPH_GRAPH_PATH` |
 | `HUGEGRAPH_USER` | `admin` | HugeGraph user |
 | `HUGEGRAPH_PASSWORD` | Empty | HugeGraph password |
 | `HUGEGRAPH_MCP_TOOLSET` | `v2_core` | This release accepts `v2_core` and `v1` |
@@ -166,7 +168,7 @@ The following defaults apply to published version `1.7.1`. HugeGraph credentials
 | `HUGEGRAPH_MCP_ADMIN_MODE` | `false` | Enable eligible administrative operations |
 | `HUGEGRAPH_AI_URL` | `http://127.0.0.1:8001` | HugeGraph-LLM service address |
 | `HUGEGRAPH_AI_TOKEN` | Unset | HugeGraph-LLM bearer token |
-| `HUGEGRAPH_AI_GRAPH_URL` | Unset | Does not change the AI target; deprecated and ignored in current source |
+| `HUGEGRAPH_AI_GRAPH_URL` | Unset | Does not change the AI target; ignored in current source |
 | `HUGEGRAPH_AI_TIMEOUT_SECONDS` | `30` | AI HTTP request timeout in seconds |
 | `HUGEGRAPH_MCP_STATE_DIR` | XDG state directory or `~/.local/state/hugegraph-mcp` | Persistent directory for write plans and receipts |
 
@@ -190,15 +192,14 @@ Configure `GRAPH_URL` on the AI service to an address reachable from its contain
 Set `GRAPH_NAME` and `GRAPH_SPACE` to match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
 Changing the MCP address does not reconfigure the AI service target.
 
-**Refresh prerequisites in current AI source**: also set `ENABLE_LOGIN=true` and `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
+**Refresh prerequisites in proposed AI changes**: also set `ENABLE_LOGIN=true` and `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
 on the service, configure a strong `USER_TOKEN`, and provide valid authentication through MCP's `HUGEGRAPH_AI_TOKEN`.
-Older deployments may lack these gates; check the actual service version. Current MCP source requires
+Older deployments may lack these gates; check the actual service version. The proposed refresh protocol in
+[apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) (not yet merged) requires
 `GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, then sends the expected graph
 and graphspace for service-side validation before refreshing. Older services without the protocol are rejected.
-This does not prove both sides connect to the same physical server. The protocol applies to current source and the next release,
+This does not prove both sides connect to the same physical server. The protocol applies to future releases,
 not the published `1.7.1` installation examples above.
-
-For the default MCP target `DEFAULT/hugegraph`, explicitly configure AI `GRAPH_NAME=hugegraph` and `GRAPH_SPACE=DEFAULT`; an unset/null graphspace does not pass the exact target check.
 
 ## Troubleshooting
 
