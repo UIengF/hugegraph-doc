@@ -98,10 +98,10 @@ Version `1.7.1` accepts the following configuration names:
 Any other value, including `v2`, `core`, `legacy` or an empty string, falls back to the 10-tool `v1` set in 1.7.1 and logs an error.
 Both toolsets report `mcp_tool_contract_version="2.0"`. This field describes the tool contract, not the package version.
 
-### New Names (Proposed in apache/hugegraph-ai#382)
+### New Names (Merged to apache/hugegraph-ai main in #382)
 
 The proposed naming fix renames the default toolset to `core` and the compatibility toolset to `legacy`.
-This section describes an unmerged change and **does not apply to the 1.7.1 installation command above**.
+This change is merged to apache/hugegraph-ai main in #382, but is not yet in a published release; it **does not apply to the 1.7.1 installation command above**.
 The release version and upgrade command must be updated after publication.
 
 - `v2_core` maps to `core`, and `v1` maps to `legacy`. Old values remain compatibility aliases and emit a migration warning.
@@ -192,10 +192,10 @@ Configure `GRAPH_URL` on the AI service to an address reachable from its contain
 Set `GRAPH_NAME` and `GRAPH_SPACE` to match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
 Changing the MCP address does not reconfigure the AI service target.
 
-**Refresh prerequisites in proposed AI changes**: also set `ENABLE_LOGIN=true` and `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
+**Refresh prerequisites in #382 (merged to main, not yet in a published release)**: also set `ENABLE_LOGIN=true` and `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
 on the service, configure a strong `USER_TOKEN`, and provide valid authentication through MCP's `HUGEGRAPH_AI_TOKEN`.
-Older deployments may lack these gates; check the actual service version. The proposed refresh protocol in
-[apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) (not yet merged) requires
+Older deployments may lack these gates; check the actual service version. The refresh protocol merged in
+[apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) (not yet in a published release) requires
 `GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, then sends the expected graph
 and graphspace for service-side validation before refreshing. Older services without the protocol are rejected.
 This does not prove both sides connect to the same physical server. The protocol applies to future releases,

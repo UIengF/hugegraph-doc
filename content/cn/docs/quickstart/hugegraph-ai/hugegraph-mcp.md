@@ -98,10 +98,10 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 其他任何值（包括 `v2`、`core`、`legacy` 或空字符串），在 1.7.1 中均会记录错误日志并回退到包含 10 个工具的 `v1` 兼容工具集。
 两种工具集的 `mcp_tool_contract_version` 均为 `2.0`，该字段表示工具契约，不表示包版本。
 
-### 新名称迁移（apache/hugegraph-ai#382 提案，尚未合并）
+### 新名称迁移（已合并至 apache/hugegraph-ai main #382，未发布）
 
-该提案计划将默认工具集改名为 `core`，兼容工具集改名为 `legacy`。
-本节描述尚未合并的改动，**不适用于上面的 1.7.1 安装命令**。
+该改动将默认工具集改名为 `core`，兼容工具集改名为 `legacy`。
+该改动已合并至 apache/hugegraph-ai main 分支（#382），但尚未发布至 PyPI，**不适用于上面的 1.7.1 安装命令**。
 新版本号和升级命令应在正式发布后更新。
 
 - `v2_core` 对应 `core`，`v1` 对应 `legacy`；旧值作为兼容别名保留，并输出迁移警告。
@@ -190,9 +190,9 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 应在 AI 服务侧配置 `GRAPH_URL` 为容器可访问的地址，例如 `http://server:8080`，并设置 `GRAPH_NAME`、`GRAPH_SPACE`
 与 MCP 目标一致；不要让容器通过 `127.0.0.1` 访问宿主机上的图服务。修改 MCP 地址不会修改 AI 服务目标。
 
-**AI 提案中的刷新前置条件**：服务侧还需 `ENABLE_LOGIN=true`、`HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
+**#382 中的刷新前置条件（已合并至 main，未发布）**：服务侧还需 `ENABLE_LOGIN=true`、`HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
 及强 `USER_TOKEN`；MCP 的 `HUGEGRAPH_AI_TOKEN` 必须携带有效认证。旧部署可能没有这些写入门禁，需核对服务版本。
-在尚未合并的提案 [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) 中，MCP 要求
+在 [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382)（已合并至 main，未正式发版）中，MCP 要求
 `GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，再传入预期图名与 graphspace
 由服务校验后刷新；缺少协议的旧服务会被拒绝。这不证明两侧连接同一台物理服务器。此协议属于后续版本规划，
 不适用于上述已发布的 `1.7.1` 安装示例。
