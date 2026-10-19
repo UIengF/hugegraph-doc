@@ -98,9 +98,9 @@ Version `1.7.1` accepts the following configuration names:
 Any other value, including `v2`, `core`, `legacy` or an empty string, falls back to the 10-tool `v1` set in 1.7.1 and logs an error.
 Both toolsets report `mcp_tool_contract_version="2.0"`. This field describes the tool contract, not the package version.
 
-### New Names (Merged to apache/hugegraph-ai main in #382)
+### New Names (Merged to apache/hugegraph-ai main in #382, Not Yet Released)
 
-The proposed naming fix renames the default toolset to `core` and the compatibility toolset to `legacy`.
+The default toolset is renamed to `core` and the compatibility toolset to `legacy`.
 This change is merged to apache/hugegraph-ai main in #382, but is not yet in a published release; it **does not apply to the 1.7.1 installation command above**.
 The release version and upgrade command must be updated after publication.
 
@@ -185,21 +185,22 @@ Configure and start the model service using the [HugeGraph-LLM guide](./hugegrap
 ```
 
 Merge these entries into the earlier `env` object. Generation and extraction can remain read-only.
-Embedding refresh additionally requires `HUGEGRAPH_MCP_READONLY=false`, `HUGEGRAPH_MCP_ADMIN_MODE=true`, and `confirm=true` in the tool call.
+Embedding refresh additionally requires:
+- Client settings: `HUGEGRAPH_MCP_READONLY=false`, `HUGEGRAPH_MCP_ADMIN_MODE=true`, and `confirm=true` in the tool call.
+- Service settings (HugeGraph-LLM): `ENABLE_LOGIN=true`, `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`, a configured `USER_TOKEN`,
+  and valid authentication passed via MCP's `HUGEGRAPH_AI_TOKEN`. Without these service-side gates, refresh requests are rejected
+  with `FEATURE_DISABLED` ("Legacy Thin API writes are disabled").
 
 If MCP runs on the host and AI runs in a container, they may need different addresses to reach HugeGraph.
 Configure `GRAPH_URL` on the AI service to an address reachable from its container, such as `http://server:8080`.
 Set `GRAPH_NAME` and `GRAPH_SPACE` to match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
 Changing the MCP address does not reconfigure the AI service target.
 
-**Refresh prerequisites in #382 (merged to main, not yet in a published release)**: also set `ENABLE_LOGIN=true` and `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
-on the service, configure a strong `USER_TOKEN`, and provide valid authentication through MCP's `HUGEGRAPH_AI_TOKEN`.
-Older deployments may lack these gates; check the actual service version. The refresh protocol merged in
-[apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) (not yet in a published release) requires
-`GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, then sends the expected graph
-and graphspace for service-side validation before refreshing. Older services without the protocol are rejected.
-This does not prove both sides connect to the same physical server. The protocol applies to future releases,
-not the published `1.7.1` installation examples above.
+**Capability check protocol in #382 (merged to main, not yet in a published release)**:
+The capability check protocol merged in [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) requires
+`GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, and sends the expected graph and graphspace
+for service-side validation before refreshing. Services lacking this protocol are rejected. This protocol applies to future
+releases and is not required for the published `1.7.1` package.
 
 ## Troubleshooting
 

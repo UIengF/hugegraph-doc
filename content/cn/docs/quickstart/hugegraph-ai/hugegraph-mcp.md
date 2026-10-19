@@ -183,19 +183,19 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 }
 ```
 
-这段内容应合并到前面的 `env` 对象中。生成和抽取可保持只读；向量刷新还要求
-`HUGEGRAPH_MCP_READONLY=false`、`HUGEGRAPH_MCP_ADMIN_MODE=true` 和调用时 `confirm=true`。
+这段内容应合并到前面的 `env` 对象中。生成和抽取可保持只读；向量刷新要求满足以下条件：
+- 客户端配置：`HUGEGRAPH_MCP_READONLY=false`、`HUGEGRAPH_MCP_ADMIN_MODE=true`，且调用时需传入 `confirm=true`。
+- 服务端配置（HugeGraph-LLM）：需设置 `ENABLE_LOGIN=true` 与 `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`，配置强 `USER_TOKEN`，
+  并通过 MCP 的 `HUGEGRAPH_AI_TOKEN` 传递有效认证。若服务端未开启写入门禁，刷新请求将被拒绝并返回 `FEATURE_DISABLED`（"Legacy Thin API writes are disabled"）。
 
 如果 MCP 在宿主机运行，而 AI 在容器中运行，二者访问 HugeGraph 的地址可能不同。
 应在 AI 服务侧配置 `GRAPH_URL` 为容器可访问的地址，例如 `http://server:8080`，并设置 `GRAPH_NAME`、`GRAPH_SPACE`
 与 MCP 目标一致；不要让容器通过 `127.0.0.1` 访问宿主机上的图服务。修改 MCP 地址不会修改 AI 服务目标。
 
-**#382 中的刷新前置条件（已合并至 main，未发布）**：服务侧还需 `ENABLE_LOGIN=true`、`HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`
-及强 `USER_TOKEN`；MCP 的 `HUGEGRAPH_AI_TOKEN` 必须携带有效认证。旧部署可能没有这些写入门禁，需核对服务版本。
-在 [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382)（已合并至 main，未正式发版）中，MCP 要求
-`GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，再传入预期图名与 graphspace
-由服务校验后刷新；缺少协议的旧服务会被拒绝。这不证明两侧连接同一台物理服务器。此协议属于后续版本规划，
-不适用于上述已发布的 `1.7.1` 安装示例。
+**能力校验协议（已合并至 main #382，未正式发布）**：
+在 [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) 中，MCP 增加了双向校验协议，要求
+`GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，并在刷新前传递预期图名与 graphspace 由服务端校验；
+缺少该协议的服务将被拒绝。此协议属于后续版本规划，不适用于上述已发布的 `1.7.1` 安装示例。
 
 ## 常见问题
 
