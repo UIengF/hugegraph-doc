@@ -98,16 +98,14 @@ Version `1.7.1` accepts the following configuration names:
 Any other value, including `v2`, `core`, `legacy` or an empty string, falls back to the 10-tool `v1` set in 1.7.1 and logs an error.
 Both toolsets report `mcp_tool_contract_version="2.0"`. This field describes the tool contract, not the package version.
 
-### New Names (Merged to apache/hugegraph-ai main in #382, Not Yet Released)
+### Toolset Naming Evolution {#toolset-evolution}
 
-The default toolset is renamed to `core` and the compatibility toolset to `legacy`.
-This change is merged to apache/hugegraph-ai main in #382, but is not yet in a published release; it **does not apply to the 1.7.1 installation command above**.
-The release version and upgrade command must be updated after publication.
+In upcoming releases, the default toolset is renamed to `core` and the compatibility toolset to `legacy`. For the current `1.7.1` release package, continue using the configurations documented above.
 
-- `v2_core` maps to `core`, and `v1` maps to `legacy`. Old values remain compatibility aliases and emit a migration warning.
-- Inspection reports only `core` or `legacy`. Clients comparing `data.toolset` or `meta.toolset` must update those comparisons.
-- An unset variable selects `core`. Empty or unknown values prevent startup instead of falling back to the compatibility toolset.
-- Toolset selection happens at startup and requires a restart to change. Compatibility mode does not bypass permission checks.
+- `v2_core` maps to `core`, and `v1` maps to `legacy`. Legacy identifiers are retained as backward-compatible aliases with migration warnings.
+- Inspection endpoints report `core` or `legacy`. Clients checking `data.toolset` or `meta.toolset` should update their checks accordingly.
+- An unset variable defaults to `core`. Empty or unrecognized values halt startup rather than silently falling back.
+- Toolset selection is resolved at launch; modifying configuration requires restarting the client. Compatibility mode does not bypass security or read-only controls.
 
 ## Tool Capabilities
 
@@ -196,11 +194,8 @@ Configure `GRAPH_URL` on the AI service to an address reachable from its contain
 Set `GRAPH_NAME` and `GRAPH_SPACE` to match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
 Changing the MCP address does not reconfigure the AI service target.
 
-**Capability check protocol in #382 (merged to main, not yet in a published release)**:
-The capability check protocol merged in [apache/hugegraph-ai#382](https://github.com/apache/hugegraph-ai/pull/382) requires
-`GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, and sends the expected graph and graphspace
-for service-side validation before refreshing. Services lacking this protocol are rejected. This protocol applies to future
-releases and is not required for the published `1.7.1` package.
+**Capability check protocol**:
+The updated protocol requires `GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, transmitting the target graph and graphspace for server-side validation before refreshing embeddings. Services without this endpoint will reject refresh requests. This validation protects multi-tenant boundary integrity in future releases.
 
 ## Troubleshooting
 
