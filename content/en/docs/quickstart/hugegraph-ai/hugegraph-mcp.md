@@ -189,10 +189,8 @@ Embedding refresh additionally requires:
   and valid authentication passed via MCP's `HUGEGRAPH_AI_TOKEN`. Without these service-side gates, refresh requests are rejected
   with `FEATURE_DISABLED` ("Legacy Thin API writes are disabled").
 
-If MCP runs on the host and AI runs in a container, they may need different addresses to reach HugeGraph.
-Configure `GRAPH_URL` on the AI service to an address reachable from its container, such as `http://server:8080`.
-Set `GRAPH_NAME` and `GRAPH_SPACE` to match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
-Changing the MCP address does not reconfigure the AI service target.
+MCP and HugeGraph-LLM must connect to the same underlying HugeGraph instance. The capability check protocol only verifies `graph_name` and `graphspace`, while the actual embedding refresh executes entirely using the AI service's independent `GRAPH_URL`. Modifying MCP's `HUGEGRAPH_URL` does not redirect the AI service's data target.
+If MCP runs on the host and AI runs in a container, they may need different addresses to reach HugeGraph: configure `GRAPH_URL` on the AI service to an address reachable from its container, such as `http://server:8080`, and ensure `GRAPH_NAME` and `GRAPH_SPACE` match MCP. Do not use the container's `127.0.0.1` to reach the host graph service.
 
 **Capability check protocol**:
 The updated protocol requires `GET /vid-embeddings/refresh-capabilities` to return `protocol_version=1`, transmitting the target graph and graphspace for server-side validation before refreshing embeddings. Services without this endpoint will reject refresh requests. This validation protects multi-tenant boundary integrity in future releases.

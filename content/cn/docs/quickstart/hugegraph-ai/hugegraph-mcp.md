@@ -183,12 +183,13 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 
 这段内容应合并到前面的 `env` 对象中。生成和抽取可保持只读；向量刷新要求满足以下条件：
 - 客户端配置：`HUGEGRAPH_MCP_READONLY=false`、`HUGEGRAPH_MCP_ADMIN_MODE=true`，且调用时需传入 `confirm=true`。
-- 服务端配置（HugeGraph-LLM）：需设置 `ENABLE_LOGIN=true` 与 `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`，配置强 `USER_TOKEN`，
+- 服务端配置（HugeGraph-LLM）：需设置 `ENABLE_LOGIN=true` 与 `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`，配置合规的 `USER_TOKEN`，
   并通过 MCP 的 `HUGEGRAPH_AI_TOKEN` 传递有效认证。若服务端未开启写入门禁，刷新请求将被拒绝并返回 `FEATURE_DISABLED`（"Legacy Thin API writes are disabled"）。
 
-如果 MCP 在宿主机运行，而 AI 在容器中运行，二者访问 HugeGraph 的地址可能不同。
-应在 AI 服务侧配置 `GRAPH_URL` 为容器可访问的地址，例如 `http://server:8080`，并设置 `GRAPH_NAME`、`GRAPH_SPACE`
-与 MCP 目标一致；不要让容器通过 `127.0.0.1` 访问宿主机上的图服务。修改 MCP 地址不会修改 AI 服务目标。
+MCP 与 HugeGraph-LLM 必须连接至同一个底层 HugeGraph 实例。能力校验协议仅校验图名与图空间，
+而实际刷新完全由 AI 服务依据其自身的 `GRAPH_URL` 独立执行；修改 MCP 的 `HUGEGRAPH_URL` 并不会改变 AI 服务的数据目标。
+若 MCP 在宿主机运行，而 AI 在容器中运行，二者访问图服务的网络地址可能不同：应在 AI 服务侧配置 `GRAPH_URL` 为容器可访问的地址
+（例如 `http://server:8080`），并确保 `GRAPH_NAME` 与 `GRAPH_SPACE` 与 MCP 目标一致；不要让容器通过 `127.0.0.1` 访问宿主机上的图服务。
 
 **能力校验协议**：
 新版协议要求调用 `GET /vid-embeddings/refresh-capabilities` 返回 `protocol_version=1`，并在刷新前传递预期图名与 graphspace 由服务端进行合法性校验；不支持该协议的服务将被拒绝。该机制用于保障多租户与图空间隔离，未发布该特性的旧版本不强制依赖。
