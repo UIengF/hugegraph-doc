@@ -185,7 +185,7 @@ Configure and start the model service using the [HugeGraph-LLM guide](./hugegrap
 Merge these entries into the earlier `env` object. Generation and extraction can remain read-only.
 Embedding refresh additionally requires:
 - Client settings: `HUGEGRAPH_MCP_READONLY=false`, `HUGEGRAPH_MCP_ADMIN_MODE=true`, and `confirm=true` in the tool call.
-- Service settings (HugeGraph-LLM): `ENABLE_LOGIN=true`, `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`, a configured `USER_TOKEN`,
+- Service settings (HugeGraph-LLM): `ENABLE_LOGIN=true`, `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`, a strong non-default `USER_TOKEN` (avoiding the well-known default `4321`),
   and valid authentication passed via MCP's `HUGEGRAPH_AI_TOKEN`. Without these service-side gates, refresh requests are rejected
   with `FEATURE_DISABLED` ("Legacy Thin API writes are disabled").
 

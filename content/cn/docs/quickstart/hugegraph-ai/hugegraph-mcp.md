@@ -183,7 +183,7 @@ stdout 用于 MCP JSON-RPC，不要将额外的 shell 输出写入该通道。
 
 这段内容应合并到前面的 `env` 对象中。生成和抽取可保持只读；向量刷新要求满足以下条件：
 - 客户端配置：`HUGEGRAPH_MCP_READONLY=false`、`HUGEGRAPH_MCP_ADMIN_MODE=true`，且调用时需传入 `confirm=true`。
-- 服务端配置（HugeGraph-LLM）：需设置 `ENABLE_LOGIN=true` 与 `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`，配置合规的 `USER_TOKEN`，
+- 服务端配置（HugeGraph-LLM）：需设置 `ENABLE_LOGIN=true` 与 `HUGEGRAPH_LLM_ENABLE_THIN_WRITES=true`，配置非默认的强 `USER_TOKEN`（避免使用弱默认值 `4321`），
   并通过 MCP 的 `HUGEGRAPH_AI_TOKEN` 传递有效认证。若服务端未开启写入门禁，刷新请求将被拒绝并返回 `FEATURE_DISABLED`（"Legacy Thin API writes are disabled"）。
 
 MCP 与 HugeGraph-LLM 必须连接至同一个底层 HugeGraph 实例。能力校验协议仅校验图名与图空间，
